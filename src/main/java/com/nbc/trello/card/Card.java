@@ -6,22 +6,33 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter @Setter
+@NoArgsConstructor
 public class Card {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column
-    String name;
+    private String name;
     @Column
-    String description;
+    private String description;
     @Column
-    String Color;
+    private String color;
     @Column
-    LocalDateTime Deadline;
+    private LocalDateTime Deadline;
     @Column
-    LocalDateTime CreatedAt;
+    private LocalDateTime CreatedAt;
     @Column
-    LocalDateTime ModifiedAt;
+    private LocalDateTime ModifiedAt;
+
+    public Card (String name, String description, String color){
+        this.name = name;
+        this.description = description;
+        this.color = color;
+    }
 
 }

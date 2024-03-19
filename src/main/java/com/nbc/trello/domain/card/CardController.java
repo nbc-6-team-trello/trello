@@ -23,7 +23,7 @@ public class CardController {
     public ResponseEntity<CommonResponse<CardResponseDto>> createCard(
         @PathVariable("board_id") Long boardId,
         @PathVariable("column_id") Long columnId,
-        @PathVariable("card_id") Long card_id,@RequestBody CardRequestDto cardRequestDto){
+        @PathVariable("card_id") Long card_id, @RequestBody CardRequestDto cardRequestDto){
 
         CardResponseDto cardResponseDto = cardService.CardCreateService(boardId, columnId, card_id,
             cardRequestDto);

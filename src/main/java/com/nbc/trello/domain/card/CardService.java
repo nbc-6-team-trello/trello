@@ -1,5 +1,7 @@
 package com.nbc.trello.domain.card;
 
+import com.nbc.trello.domain.comment.CommentRepository;
+import com.nbc.trello.domain.comment.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CardService {
     private final CardRepository cardRepository;
+    private final CommentRepository commentRepository;
 
     //카드 등록
     public CardResponseDto CardCreateService(Long boardId, Long columnId, Long cardId, CardRequestDto cardRequestDto){
@@ -20,7 +23,6 @@ public class CardService {
     public CardGetResponseDto CardGetService(Long boardId, Long columnId, Long cardId){
 
         Card card = cardRepository.findById(cardId).get();
-
 
         return new CardGetResponseDto(card);
     }

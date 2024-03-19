@@ -1,6 +1,7 @@
 package com.nbc.trello.domain.card;
 
 import com.nbc.trello.domain.comment.Comment;
+import com.nbc.trello.domain.timeStamped.TimeStamped;
 import com.nbc.trello.domain.todo.Todo;
 import com.nbc.trello.domain.user.User;
 import jakarta.persistence.Column;
@@ -26,7 +27,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) //자동으로 LocalDateTime 생성
-public class Card {
+public class Card extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,8 +51,6 @@ public class Card {
     @JoinColumn(name = "todo_id")
     private Todo todo;
 
-    @OneToMany(mappedBy = "card")
-    private List<Comment> commentList = new ArrayList<>();
 
 
     public Card (CardRequestDto cardRequestDto){

@@ -1,4 +1,4 @@
-package com.nbc.trello.entity.user;
+package com.nbc.trello.domain.user;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

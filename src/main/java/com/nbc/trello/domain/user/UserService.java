@@ -1,4 +1,4 @@
-package com.nbc.trello.entity.user;
+package com.nbc.trello.domain.user;
 
 import com.nbc.trello.global.dto.request.SignupRequestDto;
 import jakarta.servlet.http.HttpServletResponse;

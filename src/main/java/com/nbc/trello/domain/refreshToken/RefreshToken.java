@@ -1,6 +1,7 @@
-package com.nbc.trello.entity.refreshToken;
+package com.nbc.trello.domain.refreshToken;
 
-import com.nbc.trello.entity.user.User;
+import com.nbc.trello.domain.timeStamped.TimeStampedByCreatedAt;
+import com.nbc.trello.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

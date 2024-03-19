@@ -1,4 +1,4 @@
-package com.nbc.trello.entity.refreshToken;
+package com.nbc.trello.domain.refreshToken;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

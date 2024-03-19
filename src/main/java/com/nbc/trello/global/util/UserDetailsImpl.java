@@ -1,7 +1,7 @@
 package com.nbc.trello.global.util;
 
-import com.nbc.trello.entity.user.User;
-import com.nbc.trello.entity.user.UserRoleEnum;
+import com.nbc.trello.domain.user.User;
+import com.nbc.trello.domain.user.UserRoleEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,9 +1,9 @@
 package com.nbc.trello.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nbc.trello.entity.refreshToken.RefreshToken;
-import com.nbc.trello.entity.refreshToken.RefreshTokenRepository;
-import com.nbc.trello.entity.user.User;
+import com.nbc.trello.domain.refreshToken.RefreshToken;
+import com.nbc.trello.domain.refreshToken.RefreshTokenRepository;
+import com.nbc.trello.domain.user.User;
 import com.nbc.trello.global.dto.request.LoginRequestDto;
 import com.nbc.trello.global.response.CommonResponse;
 import com.nbc.trello.global.util.JwtUtil;

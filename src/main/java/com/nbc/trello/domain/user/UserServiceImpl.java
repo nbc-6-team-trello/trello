@@ -1,7 +1,7 @@
-package com.nbc.trello.entity.user;
+package com.nbc.trello.domain.user;
 
-import com.nbc.trello.entity.refreshToken.RefreshToken;
-import com.nbc.trello.entity.refreshToken.RefreshTokenRepository;
+import com.nbc.trello.domain.refreshToken.RefreshToken;
+import com.nbc.trello.domain.refreshToken.RefreshTokenRepository;
 import com.nbc.trello.global.dto.request.SignupRequestDto;
 import com.nbc.trello.global.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,10 +30,10 @@ public class UserServiceImpl implements UserService {
 
         // DB에 User 가 존재하는지 확인
         // isPresent() : Optional 객체에 값이 존재 여부 확인
-        log.info("회원 존재 확인");
-        if(userRepository.findByEmail(email).isPresent()){
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-        }
+//        log.info("회원 존재 확인");
+//        if(userRepository.findByEmail(email).isPresent()){
+//            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+//        }
 
         // 새로운 객체 생성
         User user = new User(email, password, nickname, UserRoleEnum.USER);   // role 추가

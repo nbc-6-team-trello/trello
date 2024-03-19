@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class) //자동으로 LocalDateTime 생성
 public class Card {
 
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

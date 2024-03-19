@@ -1,12 +1,16 @@
 package com.nbc.trello.entity.board;
 
 import com.nbc.trello.entity.todo.Todo;
+import com.nbc.trello.entity.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -38,7 +42,7 @@ public class Board {
   private String color;
 
   @Column(nullable = false)
-  private String description;
+  private String discription;
 
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
@@ -49,5 +53,11 @@ public class Board {
   private LocalDateTime modifiedAt;
 
   @OneToMany(mappedBy = "board")
-  private List<Todo> columnList = new ArrayList<>();
+  private List<Todo> todoList = new ArrayList<>();
+
+  public Board(BoardRequestDto requestDto) {
+    this.name = requestDto.getName();
+    this.color = requestDto.getColor();
+    this.discription = requestDto.getDiscription();
+  }
 }

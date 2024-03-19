@@ -1,4 +1,4 @@
-package com.nbc.trello.user;
+package com.nbc.trello.entity.user;
 
 import org.springframework.stereotype.Controller;
 

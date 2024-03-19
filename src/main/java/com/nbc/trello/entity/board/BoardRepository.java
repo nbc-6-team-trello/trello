@@ -1,4 +1,4 @@
-package com.nbc.trello.Board;
+package com.nbc.trello.entity.board;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

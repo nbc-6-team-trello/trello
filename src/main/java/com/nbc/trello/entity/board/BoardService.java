@@ -1,4 +1,4 @@
-package com.nbc.trello.Board;
+package com.nbc.trello.entity.board;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

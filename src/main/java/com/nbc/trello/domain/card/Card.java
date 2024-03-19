@@ -53,7 +53,7 @@ public class Card {
     @OneToMany(mappedBy = "card")
     private List<Comment> commentList = new ArrayList<>();
 
-/*
+
     public Card (CardRequestDto cardRequestDto){
         this.name = cardRequestDto.getName();
         this.pic = cardRequestDto.getPic();
@@ -69,5 +69,5 @@ public class Card {
         this.color = cardRequestDto.getBackground();
         this.deadline = cardRequestDto.getDeadline();
     }
- */
+
 }

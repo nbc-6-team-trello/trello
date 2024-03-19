@@ -1,8 +1,11 @@
 package com.nbc.trello.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nbc.trello.entity.refreshToken.RefreshToken;
+import com.nbc.trello.entity.refreshToken.RefreshTokenRepository;
 import com.nbc.trello.entity.user.User;
 import com.nbc.trello.global.dto.request.LoginRequestDto;
+import com.nbc.trello.global.response.CommonResponse;
 import com.nbc.trello.global.util.JwtUtil;
 import com.nbc.trello.global.util.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
@@ -19,9 +22,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
+        this.refreshTokenRepository = refreshTokenRepository;
         setFilterProcessesUrl("/login");
     }
 
@@ -56,8 +61,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authResult.getPrincipal();
         User user = userDetailsImpl.getUser();
 
-        String token = jwtUtil.createToken(user);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        // accessToken 생성
+        String jwtAccessToken = jwtUtil.createAccessToken(user);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtAccessToken);
+
+        // refreshToken 존재 여부 확인
+        if (validateRefreshToken(response, userDetailsImpl)) {
+            log.info("RefreshToken 생성");
+            String jwtRefreshToken = jwtUtil.createRefreshToken(user).substring(7);
+            RefreshToken jwtRefreshTokenObj = new RefreshToken(user, jwtRefreshToken);
+
+            refreshTokenRepository.save(jwtRefreshTokenObj);
+        }
 
         log.info("로그인 성공 및 JWT 생성");
         response.setStatus(HttpStatus.OK.value());
@@ -67,5 +82,26 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.error("로그인 실패");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // refreshToken 검증 : RefreshToken 이 없으면 true
+    private boolean validateRefreshToken(HttpServletResponse response, UserDetailsImpl userDetailsImpl)
+        throws IOException {
+        log.info("DB 에서 RefreshToken 존재 여부 확인");
+        if (refreshTokenRepository.findByUserId(userDetailsImpl.getUser().getId()) != null) {
+            CommonResponse<Void> commonResponse = CommonResponse.<Void>builder()
+                .msg("이미 로그인이 되어있어 refreshToken 이 존재하는 상태입니다. accessToken 을 사용하여 진행해주세요!")
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json:charset=UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(commonResponse));
+
+            // response.getWriter().flush(); // 이 부분에서 오류가 생김
+
+            return false;
+        }
+        return true;
     }
 }

@@ -1,8 +1,12 @@
 package com.nbc.trello.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nbc.trello.entity.refreshToken.RefreshToken;
+import com.nbc.trello.entity.refreshToken.RefreshTokenRepository;
+import com.nbc.trello.entity.user.User;
 import com.nbc.trello.global.response.CommonResponse;
 import com.nbc.trello.global.util.JwtUtil;
+import com.nbc.trello.global.util.UserDetailsImpl;
 import com.nbc.trello.global.util.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -30,6 +34,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final ObjectMapper objectMapper;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -52,6 +57,54 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 } catch (Exception e) {
                     // 인증 처리 중 에러 발생시 로그 처리
                     log.error(e.getMessage());
+                    return;
+                }
+            } else if(JwtTokenStatus == 1){
+                // accessToken 의 기간이 만료된 토큰
+                try {
+                    // Claim 정보에 유저 정보 넣기
+                    Claims info = jwtUtil.getUserInfoFromToken(JwtToken);
+
+                    // 사용자 정보 가져오기
+                    UserDetailsImpl userDetails
+                        = (UserDetailsImpl) userDetailsServiceImpl.loadUserByUsername(info.getSubject());
+
+                    // 가져온 사용자 정보를 이용해 서버에서 refreshToken 탐색
+                    RefreshToken refreshToken = refreshTokenRepository.findByUserId(userDetails.getUser().getId());
+
+                    if (refreshToken != null
+                        && jwtUtil.validateToken(refreshToken.getRefreshToken()) == 0)
+                    {
+                        // refreshToken 이 정상 & 만료되지 않은 경우 : accessToken 발급
+                        User user = userDetails.getUser();
+                        String newAccessToken = jwtUtil.createAccessToken(user);
+
+                        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
+                    } else {
+                        // refreshToken 이 비정상 or 만료된 경우 : refreshToken 삭제 (재로그인 필요)
+
+                        // response 의 body 설정
+                        CommonResponse<Void> commonResponse = CommonResponse.<Void>builder()
+                            .msg("AccessToken 과 RefreshToken 모두 만료")
+                            .statusCode(HttpStatus.UNAUTHORIZED.value())
+                            .build();
+
+                        // 응답 값에 status 세팅
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+                        // Body 가 깨지지 않게 UTF-8로 설정
+                        response.setContentType("application/json:charset=UTF-8");
+
+                        // Body 부분에 생성한 responseDto 삽입
+                        // objectMapper : 응답 객체를 String 으로 변환
+                        response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
+
+                        refreshTokenRepository.delete(refreshToken);
+                        log.error("Token 기간 만료");
+                        return;
+                    }
+                } catch (Exception e) {
+                    log.error("JWT 인가 오류");
                     return;
                 }
             } else{

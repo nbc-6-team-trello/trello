@@ -1,6 +1,6 @@
 package com.nbc.trello.global.util;
 
-import com.nbc.trello.user.UserRoleEnum;
+import com.nbc.trello.entity.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -86,14 +86,14 @@ public class JwtUtil {
     }
 
     // 인증(Authentication)
-    public String createToken(String username, UserRoleEnum userRole) {
+    public String createToken(User user) {
         Date date = new Date();
 
         // 토큰 생성
         return BEARER_PREFIX +
             Jwts.builder()
-                .setSubject(username)                                   // 사용자 식별자값(ID)
-                .claim(AUTHORIZATION_KEY, userRole.toString())          // 사용자 권한
+                .setSubject(user.getEmail())                            // 사용자 식별자값(ID)
+                .claim(AUTHORIZATION_KEY, user.getUserRole().toString())// 사용자 권한
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME))   // 만료 시간
                 .setIssuedAt(date)                                      // 발급일 : 생성된 시간
                 .signWith(key, signatureAlgorithm)                      // 암호화 알고리즘

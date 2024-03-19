@@ -28,23 +28,27 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // OncePerRequestFilter : 요청이 올 때 마다 Filter 를 거치도록 함
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // JwtUtil 을 이용해 JWT 요청
         String JwtToken = jwtUtil.getJwtFromHeader(request);
+
         // JWT nullCheck
         if (Objects.nonNull(JwtToken)) {
+
             // JWT 검증
-            if (jwtUtil.validateToken(JwtToken) == 0) {
+            int JwtTokenStatus = jwtUtil.validateToken(JwtToken);
+
+            if (JwtTokenStatus == 0) {
                 // Claim 정보에 유저 정보 넣기
                 Claims info = jwtUtil.getUserInfoFromToken(JwtToken);
 
                 // 사용자 인증 정보 생성 및 인증 처리
                 try {
-                    setAuthentication(info.getSubject());
+                    setAuthentication(info);
                 } catch (Exception e) {
                     // 인증 처리 중 에러 발생시 로그 처리
                     log.error(e.getMessage());
@@ -75,12 +79,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 처리
-    public void setAuthentication(String username) {
+    public void setAuthentication(Claims info) {
         // 현재 사용자의 보안 관련 정보를 저장한 변수 생성
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
         // userDetails(현재 사용자의 인증 정보) 를 Authentication 의 principal 로 설정
-        Authentication authentication = createAuthentication(username);
+        Authentication authentication = createAuthentication(info);
 
         // userDetails 를 SecurityContext 에 담기
         context.setAuthentication(authentication);
@@ -89,10 +93,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String username) {
-        // 사용자명(username) 을 기반으로 사용자(user) 조회 -> user 를 userDetails 에 담기
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    private Authentication createAuthentication(Claims info) {
+        //userDetails 에 유저의 상세 정보를 넣음 : UserRepository 조회하지 않고 해결
+        UserDetails userDetails = userDetailsServiceImpl.getUserDetails(info);
 
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        // userDetails(현재 사용자의 인증 정보) 를 Authentication 의 principal 로 설정
+        return new UsernamePasswordAuthenticationToken(userDetails, null,
+            userDetails.getAuthorities());
     }
 }

@@ -6,6 +6,7 @@ import com.nbc.trello.global.response.CommonResponse;
 import com.nbc.trello.global.util.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ public class CommentController {
 
         return ResponseEntity.ok()
             .body(CommonResponse.<CommentResponse>builder()
-                .msg("댓글 작성 성공!")
+                .statusCode(HttpStatus.OK.value())
                 .data(commentService.createComment(userDetails.getUsername(),
                     boardId, todoId, cardId, request))
                 .build());
@@ -50,7 +51,7 @@ public class CommentController {
 
         return ResponseEntity.ok()
             .body(CommonResponse.<CommentResponse>builder()
-                .msg("댓글 수정 성공!")
+                .statusCode(HttpStatus.OK.value())
                 .data(commentService.updateComment(userDetails.getUsername(),
                     boardId, todoId, cardId, commentId, request))
                 .build());
@@ -66,6 +67,7 @@ public class CommentController {
 
         return ResponseEntity.ok()
             .body(CommonResponse.<String>builder()
+                .statusCode(HttpStatus.OK.value())
                 .data(commentService.deleteComment(userDetails.getUsername(),
                     boardId, todoId, cardId, commentId))
                 .build());

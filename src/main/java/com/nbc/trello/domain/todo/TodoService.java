@@ -36,6 +36,13 @@ public class TodoService {
         todo.update(requestDto);
     }
 
+    @Transactional
+    public void deleteTodo(Long todoId) {
+        Todo todo = findTodo(todoId);
+
+        todoRepository.delete(todo);
+    }
+
     private Todo findTodo(Long todoId) {
         return todoRepository.findById(todoId)
             .orElseThrow(() -> new IllegalArgumentException("해당 컬럼이 존재하지 않습니다."));

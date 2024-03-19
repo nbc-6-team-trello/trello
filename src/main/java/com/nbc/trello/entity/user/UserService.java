@@ -1,4 +1,4 @@
-package com.nbc.trello.user;
+package com.nbc.trello.entity.user;
 
 import com.nbc.trello.global.dto.request.LoginRequestDto;
 import com.nbc.trello.global.dto.request.SignupRequestDto;

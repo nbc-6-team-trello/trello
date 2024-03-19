@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +41,20 @@ public class TodoController {
                 .msg("컬럼 조회 완료")
                 .statusCode(HttpStatus.OK.value())
                 .data(responseDtoList)
+                .build()
+        );
+    }
+
+    @PutMapping("/todos/{todoId}")
+    ResponseEntity<CommonResponse<Void>> updateTodo(
+        @PathVariable Long todoId,
+        @RequestBody TodoRequestDto requestDto) {
+        todoService.updateTodo(todoId, requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK.value()).body(
+            CommonResponse.<Void>builder()
+                .msg("컬럼 수정 성공")
+                .statusCode(HttpStatus.OK.value())
                 .build()
         );
     }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,5 +27,17 @@ public class TodoService {
         return todoList.stream()
             .map(TodoResponseDto::new)
             .toList();
+    }
+
+    @Transactional
+    public void updateTodo(Long todoId, TodoRequestDto requestDto) {
+        Todo todo = findTodo(todoId);
+
+        todo.update(requestDto);
+    }
+
+    private Todo findTodo(Long todoId) {
+        return todoRepository.findById(todoId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 컬럼이 존재하지 않습니다."));
     }
 }

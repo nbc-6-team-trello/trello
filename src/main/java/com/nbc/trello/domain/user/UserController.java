@@ -14,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,6 +69,20 @@ public class UserController {
             .msg("로그아웃 되었습니다.")
             .statusCode(HttpStatus.OK.value())
             .build()
+        );
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<CommonResponse<UserInfoResponseDto>> updateUser(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @Valid @RequestBody UserInfoRequestDto requestDto){
+
+        return ResponseEntity.status(HttpStatus.OK.value()).body(
+            CommonResponse.<UserInfoResponseDto>builder()
+                .msg("회원정보가 수정되었습니다.")
+                .statusCode(HttpStatus.OK.value())
+                .data(userService.updateUser(userDetails.getUser(), requestDto))
+                .build()
         );
     }
 }

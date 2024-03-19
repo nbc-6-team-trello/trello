@@ -62,4 +62,8 @@ public class User {
         this.kakaoId = kakaoId;
         return this;
     }
+
+    public void updatedUsername(String username) {
+        this.username = username;
+    }
 }

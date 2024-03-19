@@ -33,7 +33,7 @@ public class CommentService {
         validateParticipants(boardId, user);
         // 카드 확인
         Card card = findCardBy(cardId);
-        //  to-do 가 보드에 있는지
+        // to-do 가 보드에 있는지
         validateTodoExistInBoard(boardId, todoId);
         // 카드가 to-do 에 있는지
         validateCardExistInTodo(todoId, cardId);
@@ -47,15 +47,15 @@ public class CommentService {
 
     public CommentResponse updateComment(String email, Long boardId, Long todoId, Long cardId,
         Long commentId, CommentRequest request) {
-        // 유저 확인
+
         User user = findUserBy(email);
-        // 참여자 확인
+
         validateParticipants(boardId, user);
-        // 카드 확인
+
         Card card = findCardBy(cardId);
-        //  to-do 가 보드에 있는지
+
         validateTodoExistInBoard(boardId, todoId);
-        // 카드가 to-do 에 있는지
+
         validateCardExistInTodo(todoId, cardId);
 
         Comment comment = findCommentBy(commentId);
@@ -69,15 +69,15 @@ public class CommentService {
 
     public String deleteComment(String email, Long boardId, Long todoId, Long cardId,
         Long commentId) {
-        // 유저 확인
+
         User user = findUserBy(email);
-        // 참여자 확인
+
         validateParticipants(boardId, user);
-        // 카드 확인
+
         Card card = findCardBy(cardId);
-        //  to-do 가 보드에 있는지
+
         validateTodoExistInBoard(boardId, todoId);
-        // 카드가 to-do 에 있는지
+
         validateCardExistInTodo(todoId, cardId);
 
         Comment comment = findCommentBy(commentId);

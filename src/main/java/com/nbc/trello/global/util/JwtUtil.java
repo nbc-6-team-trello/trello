@@ -30,9 +30,9 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료 시간
     private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
-    private final long ACCESS_TOKEN_TIME = 5 * 1000L; // 5초
+    private final long ACCESS_TOKEN_TIME = 60 * 1000L; // 1분
     //private final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 60분
-    private final long REFRESH_TOKEN_TIME = 10 * 1000L; // 10초
+    private final long REFRESH_TOKEN_TIME = 600 * 1000L; // 10분
     //private final long REFRESH_TOKEN_TIME = 30 * 24 * 60 * 60 * 1000L; // 30일
 
 
@@ -113,6 +113,7 @@ public class JwtUtil {
         return BEARER_PREFIX +
             Jwts.builder()
                 .setSubject(user.getEmail())                                    // 사용자 식별자값(ID)
+                .claim("userId", user.getId())                               // 사용자 ID
                 .claim(AUTHORIZATION_KEY, user.getUserRole().toString())        // 사용자 권한
                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))    // 만료 시간
                 .setIssuedAt(date)                                              // 발급일 : 생성된 시간
@@ -128,6 +129,7 @@ public class JwtUtil {
         return BEARER_PREFIX +
             Jwts.builder()
                 .setSubject(user.getEmail())                                    // 사용자 식별자값(ID)
+                .claim("userId", user.getId())                               // 사용자 ID
                 .claim(AUTHORIZATION_KEY, user.getUserRole().toString())        // 사용자 권한
                 .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))   // 만료 시간
                 .setIssuedAt(date)                                              // 발급일 : 생성된 시간
@@ -149,6 +151,6 @@ public class JwtUtil {
         claims.put("role", user.getRole());
         claims.put("address", user.getAddress());
 
-        setClaims(claims);
+        setClaims(claims)
      */
 }

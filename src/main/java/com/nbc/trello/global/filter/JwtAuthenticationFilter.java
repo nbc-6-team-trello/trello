@@ -98,8 +98,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             response.setContentType("application/json:charset=UTF-8");
             response.getWriter().write(new ObjectMapper().writeValueAsString(commonResponse));
 
-            // response.getWriter().flush(); // 이 부분에서 오류가 생김
-
             return false;
         }
         return true;

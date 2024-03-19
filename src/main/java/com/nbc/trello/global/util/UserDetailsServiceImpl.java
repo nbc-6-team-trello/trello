@@ -20,9 +20,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     //info 에서 정보를 추출하여 User 생성
     public UserDetails getUserDetails(Claims info) {
-
         User user = new User();
-
+        user.setId(info.get("userId", Long.class));
         user.setEmail(info.getSubject());
 
         String userRoleString = info.get(AUTHORIZATION_KEY, String.class);
@@ -30,7 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new UserDetailsImpl(user);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -36,8 +36,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // FilterChain 의 시작 : doFilterInternal
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
+    ) throws ServletException, IOException {
         // JwtUtil 을 이용해 JWT 요청
         String JwtToken = jwtUtil.getJwtFromHeader(request);
 
@@ -141,6 +145,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // userDetails 를 SecurityContext 에 담기
         context.setAuthentication(authentication);
+
         // userDetails 를 현재 실행중인 스레드의 SecurityContext 로 설정 : 이제 @AuthenticationPrincipal 로 User 조회 가능
         SecurityContextHolder.setContext(context);
     }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,22 +23,13 @@ public class BoardController {
   @PostMapping("/boards")
   public ResponseEntity<CommonResponse<BoardResponseDto>> createBoard(
       @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    try {
       BoardResponseDto responseDto = boardService.createBoard(requestDto, userDetails.getUser());
       return ResponseEntity.ok()
           .body(CommonResponse.<BoardResponseDto>builder()
-              .msg("보드 생성이 성공하였습니다.")
+              .msg("보드 생성에 성공하였습니다.")
               .statusCode(200)
               .data(responseDto)
               .build());
-    } catch (Exception e) {
-      return ResponseEntity.badRequest()
-          .body(CommonResponse.<BoardResponseDto>builder()
-              .msg(e.getMessage())
-              .statusCode(400)
-              .data(null)
-              .build());
-    }
   }
   //보드 전체 조회
   @GetMapping("/boards")
@@ -45,13 +37,24 @@ public class BoardController {
     List<BoardResponseDto> boardList = boardService.getBoardList();
     return ResponseEntity.ok()
         .body(CommonResponse.<List<BoardResponseDto>>builder()
-            .msg("보드 생성이 성공하였습니다.")
+            .msg("보드 전체 조회에 성공하였습니다.")
             .statusCode(200)
             .data(boardList)
             .build());
   }
   //보드 수정
+  @PutMapping("/boards/{board_id}")
+  public ResponseEntity<CommonResponse<BoardResponseDto>> updateBoard(
+      @PathVariable Long board_id, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody BoardRequestDto requestDto) {
+    BoardResponseDto responseDto = boardService.updateBoard(board_id, requestDto, userDetails.getUser());
+    return ResponseEntity.ok()
+        .body(CommonResponse.<BoardResponseDto>builder()
+            .msg("보드 수정에 성공하였습니다.")
+            .statusCode(200)
+            .data(responseDto)
+            .build());
 
+  }
   //보드 삭제
 
   //보드 초대

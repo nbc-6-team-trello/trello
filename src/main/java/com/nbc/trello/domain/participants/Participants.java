@@ -24,19 +24,19 @@ public class Participants {
     private Long id;
 
     @Column
-    private Long user_id;
+    private Long userId;
 
     @Column
-    private Long board_id;
+    private Long boardId;
 
     public Participants(User user, Board board) {
-        this.user_id = user.getId();
-        this.board_id = board.getId();
+        this.userId = user.getId();
+        this.boardId = board.getId();
     }
 
     public BoardResponseDto toDto() {
         BoardResponseDto responseDto = new BoardResponseDto();
-        responseDto.setBoard_id(this.board_id);
+        responseDto.setBoard_id(this.boardId);
         return responseDto;
     }
 }

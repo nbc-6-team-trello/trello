@@ -21,6 +21,15 @@ public class CardService {
 
         Card card = cardRepository.findById(cardId).get();
 
+
+        return new CardGetResponseDto(card);
+    }
+
+    public CardGetResponseDto CardetService(Long boardId, Long columnId, Long cardId){
+
+        Card card = cardRepository.findById(cardId).get();
+
+
         return new CardGetResponseDto(card);
     }
 
@@ -34,6 +43,7 @@ public class CardService {
         return new CardResponseDto(boardId, columnId, cardId);
     }
 
+
     //카드 수정
     public CardResponseDto CardUpdateService(Long boardId, Long columnId, Long cardId, CardRequestDto cardRequestDto){
 
@@ -44,4 +54,5 @@ public class CardService {
 
         return new CardResponseDto(boardId, columnId, cardId);
     }
+
 }

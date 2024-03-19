@@ -2,6 +2,8 @@ package com.nbc.trello.entity.user;
 
 import com.nbc.trello.global.dto.request.SignupRequestDto;
 import com.nbc.trello.global.response.CommonResponse;
+import com.nbc.trello.global.util.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +54,19 @@ public class UserController {
                 .msg("회원가입이 성공하였습니다.")
                 .data(userService.signup(userRequestDto))
                 .build()
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<CommonResponse<Long>> logoutUser(
+        HttpServletResponse response,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        userService.logoutUser(response, userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK.value()).body(CommonResponse.<Long>builder()
+            .msg("로그아웃 되었습니다.")
+            .statusCode(HttpStatus.OK.value())
+            .build()
         );
     }
 }

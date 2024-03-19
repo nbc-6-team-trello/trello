@@ -1,10 +1,15 @@
 package com.nbc.trello.entity.user;
 
+import com.nbc.trello.entity.refreshToken.RefreshToken;
+import com.nbc.trello.entity.refreshToken.RefreshTokenRepository;
 import com.nbc.trello.global.dto.request.SignupRequestDto;
+import com.nbc.trello.global.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j(topic = "UserServiceImpl")
 @Service
@@ -13,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final String ADMIN_TOKEN = "f679d89c320cc4adb72b7647a64ccbe520406dc3ee4578b44bcffbfa7ebbb85e30b964306b6398d3a2d7098ecd1bc203551e356ac5ec4a5ee0c7dc899fb704c5";
 
@@ -37,5 +43,17 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return user.getId();
+    }
+
+    @Override
+    @Transactional
+    public void logoutUser(HttpServletResponse response, User user) {
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, null);
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(user.getId());
+
+        if (refreshToken != null) {
+            log.info("refreshToken 삭제");
+            refreshTokenRepository.delete(refreshToken);
+        }
     }
 }

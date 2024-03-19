@@ -1,6 +1,8 @@
 package com.nbc.trello.entity.user;
 
 import com.nbc.trello.global.dto.request.SignupRequestDto;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
     /**
@@ -9,4 +11,7 @@ public interface UserService {
      */
 
     Long signup(SignupRequestDto userRequestDto);
+
+    @Transactional
+    public void logoutUser(HttpServletResponse response, User user);
 }

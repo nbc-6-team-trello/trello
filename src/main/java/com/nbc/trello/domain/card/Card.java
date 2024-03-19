@@ -50,9 +50,13 @@ public class Card extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
     private Todo todo;
+<<<<<<< HEAD
 
 
 
+=======
+/*
+>>>>>>> 714af9a0cf9f220dff2c1fedebc3f21cccc87534
     public Card (CardRequestDto cardRequestDto){
         this.name = cardRequestDto.getName();
         this.pic = cardRequestDto.getPic();

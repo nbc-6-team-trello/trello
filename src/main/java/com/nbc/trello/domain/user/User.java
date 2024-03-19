@@ -33,17 +33,33 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column
     private String username;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum userRole;
 
+    @Column(nullable = true)
+    private Long kakaoId;
+
     public User(String email, String password, String nickname, UserRoleEnum userRole) {
         this.email = email;
         this.password = password;
         this.username = nickname;
         this.userRole = userRole;
+    }
+
+    public User(String email, String password, String nickname, UserRoleEnum userRole, Long kakaoId) {
+        this.email = email;
+        this.password = password;
+        this.username = nickname;
+        this.userRole = userRole;
+        this.kakaoId = kakaoId;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }

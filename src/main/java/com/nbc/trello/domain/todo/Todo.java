@@ -46,8 +46,8 @@ public class Todo extends TimeStamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "todo")
-    private List<Card> cardList = new ArrayList<>();
+//    @OneToMany(mappedBy = "todo")
+//    private List<Card> cardList = new ArrayList<>();
 
     @Builder
     public Todo(String title) {

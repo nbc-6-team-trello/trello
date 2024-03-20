@@ -85,7 +85,7 @@ public class BoardService {
 
     //보드 삭제
     @Transactional
-    public BoardResponseDto deleteBoard(Long boardId, BoardRequestDto requestDto, User user) {
+    public BoardResponseDto deleteBoard(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드입니다."));
         participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,

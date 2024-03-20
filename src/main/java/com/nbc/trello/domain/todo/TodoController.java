@@ -53,11 +53,13 @@ public class TodoController {
         );
     }
 
-    @PutMapping("/todos/{todoId}")
+    @PutMapping("/boards/{boardId}/todos/{todoId}")
     ResponseEntity<CommonResponse<Void>> updateTodo(
+        @PathVariable Long boardId,
         @PathVariable Long todoId,
-        @RequestBody TodoRequestDto requestDto) {
-        todoService.updateTodo(todoId, requestDto);
+        @RequestBody @Valid TodoRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        todoService.updateTodo(boardId, todoId, requestDto, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<Void>builder()

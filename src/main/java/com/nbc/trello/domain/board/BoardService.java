@@ -1,14 +1,20 @@
 package com.nbc.trello.domain.board;
 
+import com.nbc.trello.domain.card.Card;
 import com.nbc.trello.domain.card.CardRepository;
+import com.nbc.trello.domain.card.CardResponseDto;
 import com.nbc.trello.domain.participants.Participants;
 import com.nbc.trello.domain.participants.ParticipantsRepository;
+import com.nbc.trello.domain.todo.Todo;
 import com.nbc.trello.domain.todo.TodoRepository;
+import com.nbc.trello.domain.todo.TodoResponseDto;
 import com.nbc.trello.domain.user.User;
 import com.nbc.trello.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +50,22 @@ public class BoardService {
     if (boardList.isEmpty()) {
       throw new IllegalArgumentException("조회할 수 있는 보드가 없습니다.");
     }
-    return boardList.stream().map(BoardResponseDto::new).toList();
+    List<BoardResponseDto> result = new ArrayList<>();
+    for (Board board : boardList) {
+      List<Todo> todos = todoRepository.findByBoardId(board.getId());
+      List<TodoResponseDto> todoDtos = new ArrayList<>();
+
+      for (Todo todo : todos) {
+        List<Card> cards = cardRepository.findByTodoId(todo.getId());
+        List<CardResponseDto> cardDtos = cards.stream()
+            .map(CardResponseDto::new)
+            .collect(Collectors.toList());
+
+        todoDtos.add(new TodoResponseDto(todo.getTitle(), cardDtos));
+      }
+      result.add(new BoardResponseDto(board.getName(), todoDtos));
+    }
+    return result;
   }
 
   //보드 수정

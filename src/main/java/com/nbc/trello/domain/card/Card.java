@@ -49,21 +49,4 @@ public class Card {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
     private Todo todo;
-/*
-    public Card (CardRequestDto cardRequestDto){
-        this.name = cardRequestDto.getName();
-        this.pic = cardRequestDto.getPic();
-        this.description = cardRequestDto.getDescription();
-        this.color = cardRequestDto.getBackground();
-        this.deadline = cardRequestDto.getDeadline();
-    }
-
-    public void CardUpdate(CardRequestDto cardRequestDto){
-        this.name = cardRequestDto.getName();
-        this.pic = cardRequestDto.getPic();
-        this.description = cardRequestDto.getDescription();
-        this.color = cardRequestDto.getBackground();
-        this.deadline = cardRequestDto.getDeadline();
-    }
- */
 }

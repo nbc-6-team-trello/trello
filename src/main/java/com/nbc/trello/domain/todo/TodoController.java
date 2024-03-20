@@ -31,7 +31,7 @@ public class TodoController {
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(
             CommonResponse.<TodoResponseDto>builder()
-                .msg("컬럼 생성 완료")
+                .msg("투두 생성 완료")
                 .statusCode(HttpStatus.CREATED.value())
                 .data(responseDto)
                 .build()
@@ -46,7 +46,7 @@ public class TodoController {
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<List<TodoResponseDto>>builder()
-                .msg("컬럼 조회 완료")
+                .msg("투두 조회 완료")
                 .statusCode(HttpStatus.OK.value())
                 .data(responseDtoList)
                 .build()
@@ -63,7 +63,7 @@ public class TodoController {
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<Void>builder()
-                .msg("컬럼 수정 성공")
+                .msg("투두 수정 성공")
                 .statusCode(HttpStatus.OK.value())
                 .build()
         );
@@ -78,7 +78,7 @@ public class TodoController {
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<Void>builder()
-                .msg("컬럼 삭제 성공")
+                .msg("투두 삭제 성공")
                 .statusCode(HttpStatus.OK.value())
                 .build()
         );

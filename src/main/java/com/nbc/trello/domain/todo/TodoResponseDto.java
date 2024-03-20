@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TodoResponseDto {
 
-    private String title;
+  private String title;
 
-    private List<CardResponseDto> cardDtos;
+  private List<CardResponseDto> cardDtos;
 
-    public TodoResponseDto(Todo todo) {
-        this.title = todo.getTitle();
-    }
+  public TodoResponseDto(Todo todo) {
+    this.title = todo.getTitle();
+  }
 
-    public TodoResponseDto(String title, List<CardResponseDto> cardDtos) {
-        this.title = title;
-        this.cardDtos = cardDtos;
-    }
+  public TodoResponseDto(String title, List<CardResponseDto> cardDtos) {
+    this.title = title;
+    this.cardDtos = cardDtos;
+  }
 }

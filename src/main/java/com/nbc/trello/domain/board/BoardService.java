@@ -102,9 +102,10 @@ public class BoardService {
   //보드 초대
   public BoardResponseDto inviteUser(Long boardId, Long userId, User user) {
 
-    userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하는 유저가 아니여서 초대할 수 없습니다."));
+    userRepository.findById(userId)
+        .orElseThrow(() -> new IllegalArgumentException("존재하는 유저가 아니여서 초대할 수 없습니다."));
 
-    if(Objects.equals(userId, user.getId())) {
+    if (Objects.equals(userId, user.getId())) {
       throw new IllegalArgumentException("자기 자신은 초대할 수 없습니다.");
     }
 
@@ -112,10 +113,8 @@ public class BoardService {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드입니다."));
     participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
         user.getId(), true).orElseThrow(() -> new IllegalArgumentException("보드 초대 권한이 없습니다."));
-    boolean present = participantsRepository.findByBoardIdAndUserId(boardId, userId).isPresent();
-    if(present) {
-      throw new IllegalArgumentException("이미 참가하고 있는 사용자입니다.");
-    }
+    participantsRepository.findByBoardIdAndUserId(boardId, userId)
+        .orElseThrow(() -> new IllegalArgumentException("이미 참가하고 있는 사용자입니다."));
 
     Participants participants = new Participants(userId, board.getId());
     participantsRepository.save(participants);

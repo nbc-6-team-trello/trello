@@ -1,7 +1,10 @@
 package com.nbc.trello.domain.card;
 
+import com.nbc.trello.domain.comment.Comment;
 import com.nbc.trello.domain.comment.CommentRepository;
-import com.nbc.trello.domain.comment.CommentService;
+import com.nbc.trello.domain.todo.Todo;
+import com.nbc.trello.domain.todo.TodoRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,39 +13,48 @@ import org.springframework.stereotype.Service;
 public class CardService {
     private final CardRepository cardRepository;
     private final CommentRepository commentRepository;
+    private final TodoRepository todoRepository;
 
     //카드 등록
-    public CardResponseDto CardCreateService(Long boardId, Long columnId, Long cardId, CardRequestDto cardRequestDto){
+    public CardResponseDto CardCreateService(Long boardId, Long columnId, CardRequestDto cardRequestDto){
         Card card = new Card(cardRequestDto);
-        cardRepository.save(card);
+        Todo todo = todoRepository.findById(columnId).get();
+        card.setTodo(todo);
+        Card save = cardRepository.save(card);
 
-        return new CardResponseDto(boardId, columnId, cardId);
+
+        return new CardResponseDto(boardId, todo.getId(), save.getId());
     }
 
     //카드 단건조회
-    public CardGetResponseDto CardGetService(Long boardId, Long columnId, Long cardId){
+    public CardCommentResponseDto CardGetService(Long boardId, Long columnId, Long cardId){
 
         Card card = cardRepository.findById(cardId).get();
+        List<Comment> byCardId = commentRepository.findByCardId(cardId);
 
-        return new CardGetResponseDto(card);
-    }
+        CardCommentResponseDto cardCommentResponseDto = new CardCommentResponseDto(card);
 
-    public CardGetResponseDto CardetService(Long boardId, Long columnId, Long cardId){
+        for (Comment com : byCardId) {
+            cardCommentResponseDto.getGetCommentResponseDtoList().add(
+                getCommentResponseDto.builder().commentId(com.getId())
+                    .comment(com.getContent()).build()
+            );
+        }
 
-        Card card = cardRepository.findById(cardId).get();
-
-
-        return new CardGetResponseDto(card);
+        return CardCommentResponseDto.builder().cardId(card.getId()).name(card.getName()).description(card.getDescription())
+            .getCommentResponseDtoList(cardCommentResponseDto.getGetCommentResponseDtoList()).build();
     }
 
     //카드 삭제
     public CardResponseDto CardDeleteService(Long boardId, Long columnId, Long cardId){
 
         Card card = cardRepository.findById(cardId).get();
+        if(columnId == card.getTodo().getId()){
+            cardRepository.delete(card);
+        }
 
-        cardRepository.delete(card);
-
-        return new CardResponseDto(boardId, columnId, cardId);
+        //return new CardResponseDto(boardId, columnId, cardId);
+        return null;
     }
 
 
@@ -51,10 +63,13 @@ public class CardService {
 
         Card card = cardRepository.findById(cardId).get();
 
-        card.CardUpdate(cardRequestDto);
-        Card save = cardRepository.save(card);
+        if(columnId == card.getTodo().getId()){
+            card.CardUpdate(cardRequestDto);
+            Card save = cardRepository.save(card);
+        }
 
-        return new CardResponseDto(boardId, columnId, cardId);
+
+        return new CardResponseDto(boardId, card.getTodo().getId(), card.getId());
     }
 
 }

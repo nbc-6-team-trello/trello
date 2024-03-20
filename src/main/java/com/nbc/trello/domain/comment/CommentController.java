@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,7 +47,7 @@ public class CommentController {
         @PathVariable Long todoId,
         @PathVariable Long cardId,
         @PathVariable Long commentId,
-        @RequestParam @Valid CommentRequest request) {
+        @RequestBody @Valid CommentRequest request) {
 
         return ResponseEntity.ok()
             .body(CommonResponse.<CommentResponse>builder()

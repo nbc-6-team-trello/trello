@@ -38,9 +38,11 @@ public class TodoController {
         );
     }
 
-    @GetMapping("/todos")
-    ResponseEntity<CommonResponse<List<TodoResponseDto>>> getTodos() {
-        List<TodoResponseDto> responseDtoList = todoService.getTodos();
+    @GetMapping("/boards/{boardId}/todos")
+    ResponseEntity<CommonResponse<List<TodoResponseDto>>> getTodos(
+        @PathVariable Long boardId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<TodoResponseDto> responseDtoList = todoService.getTodos(boardId, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<List<TodoResponseDto>>builder()

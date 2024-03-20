@@ -40,7 +40,14 @@ public class TodoService {
         return new TodoResponseDto(todoRepository.save(todo));
     }
 
-    public List<TodoResponseDto> getTodos() {
+    public List<TodoResponseDto> getTodos(Long boardId, User user) {
+        // 유저 확인
+        user = findUserBy(user.getEmail());
+        // 참여자 확인
+        validateParticipants(boardId, user.getId());
+        // 보드 확인
+        Board board = findBoard(boardId);
+
         List<Todo> todoList = todoRepository.findAll(Sort.by(Direction.DESC, "createdAt"));
 
         return todoList.stream()

@@ -1,10 +1,13 @@
 package com.nbc.trello.domain.todo;
 
 import com.nbc.trello.global.response.CommonResponse;
+import com.nbc.trello.global.util.UserDetailsImpl;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +22,12 @@ public class TodoController {
 
     private final TodoService todoService;
 
-    @PostMapping("/todos")
+    @PostMapping("/boards/{boardId}/todos")
     ResponseEntity<CommonResponse<TodoResponseDto>> createTodo(
-        @RequestBody TodoRequestDto requestDto) {
-        TodoResponseDto responseDto = todoService.createTodo(requestDto);
+        @PathVariable Long boardId,
+        @RequestBody @Valid TodoRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        TodoResponseDto responseDto = todoService.createTodo(boardId, requestDto, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(
             CommonResponse.<TodoResponseDto>builder()

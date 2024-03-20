@@ -44,10 +44,8 @@ public class Todo extends TimeStamped {
     public Todo(String title) {
         this.title = title;
     }
-/*
+
     public void update(TodoRequestDto requestDto) {
         this.title = requestDto.getTitle();
     }
-
- */
 }

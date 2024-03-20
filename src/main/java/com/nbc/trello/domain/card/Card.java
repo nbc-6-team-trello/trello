@@ -46,7 +46,6 @@ public class Card {
     @JoinColumn(name = "todo_id")
     private Todo todo;
 
-/*
     public Card (CardRequestDto cardRequestDto){
         this.name = cardRequestDto.getName();
         this.pic = cardRequestDto.getPic();
@@ -62,5 +61,4 @@ public class Card {
         this.color = cardRequestDto.getBackground();
         this.deadline = cardRequestDto.getDeadline();
     }
- */
 }

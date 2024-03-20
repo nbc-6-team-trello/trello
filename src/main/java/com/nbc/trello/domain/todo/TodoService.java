@@ -1,19 +1,10 @@
 package com.nbc.trello.domain.todo;
 
-import com.nbc.trello.domain.board.Board;
-import com.nbc.trello.domain.board.BoardRepository;
-import com.nbc.trello.domain.card.Card;
-import com.nbc.trello.domain.card.CardRepository;
-import com.nbc.trello.domain.card.CardResponseDto;
-import com.nbc.trello.domain.participants.ParticipantsRepository;
-import com.nbc.trello.domain.user.User;
-import com.nbc.trello.domain.user.UserRepository;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +14,6 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
     private final BoardRepository boardRepository;
-    private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final ParticipantsRepository participantsRepository;
 
@@ -49,22 +39,14 @@ public class TodoService {
         user = findUserBy(user.getEmail());
         // 참여자 확인
         validateParticipants(boardId, user.getId());
-        List<Todo> todoList = todoRepository.findAll();
-        if (todoList.isEmpty()) {
-            throw new IllegalArgumentException("컬럼이 존재하지 않습니다.");
-        }
+        // 보드 확인
+        Board board = findBoard(boardId);
 
-        List<TodoResponseDto> result = new ArrayList<>();
-        for (Todo todo : todoList) {
-            List<Card> cardList = cardRepository.findByTodoId(todo.getId());
-            List<CardResponseDto> cardResponseDtoList = cardList.stream()
-                .map(CardResponseDto::new)
-                .toList();
+        List<Todo> todoList = todoRepository.findAll(Sort.by(Direction.DESC, "createdAt"));
 
-            result.add(new TodoResponseDto(todo.getTitle(), cardResponseDtoList));
-        }
-
-        return result;
+        return todoList.stream()
+            .map(TodoResponseDto::new)
+            .toList();
     }
 
     @Transactional

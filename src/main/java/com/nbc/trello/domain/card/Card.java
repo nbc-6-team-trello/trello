@@ -1,10 +1,6 @@
 package com.nbc.trello.domain.card;
 
-<<<<<<< HEAD
-import com.nbc.trello.domain.comment.Comment;
 import com.nbc.trello.domain.timeStamped.TimeStamped;
-=======
->>>>>>> 321b30fd6529b7c35e945bed912b77e3a75c5544
 import com.nbc.trello.domain.todo.Todo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,10 +46,7 @@ public class Card extends TimeStamped {
     @JoinColumn(name = "todo_id")
     private Todo todo;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 321b30fd6529b7c35e945bed912b77e3a75c5544
     public Card (CardRequestDto cardRequestDto){
         this.name = cardRequestDto.getName();
         this.pic = cardRequestDto.getPic();
@@ -69,8 +62,5 @@ public class Card extends TimeStamped {
         this.color = cardRequestDto.getBackground();
         this.deadline = cardRequestDto.getDeadline();
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 321b30fd6529b7c35e945bed912b77e3a75c5544
 }

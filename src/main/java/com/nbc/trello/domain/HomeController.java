@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
+
     private final UserService userService;
+
     @GetMapping("/")
     public String home() {
         return "index";
@@ -41,7 +43,7 @@ public class HomeController {
     public String signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        if(fieldErrors.size() > 0) {
+        if (fieldErrors.size() > 0) {
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
                 log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
             }
@@ -57,9 +59,9 @@ public class HomeController {
     @GetMapping("/api/user-info")
     @ResponseBody
     public UserInfoDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if(userDetails == null){
+        if (userDetails == null) {
             throw new NullPointerException("accessToken 과 refreshToken 의 사용 기간이 만료되었습니다");
-        } else{
+        } else {
             String username = userDetails.getUser().getEmail();
             UserRoleEnum role = userDetails.getUser().getUserRole();
             boolean isAdmin = (role != UserRoleEnum.USER);

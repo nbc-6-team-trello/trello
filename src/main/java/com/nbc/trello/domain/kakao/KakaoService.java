@@ -42,7 +42,8 @@ public class KakaoService {
         User kakaouUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. 가져온 정보를 가지고 JWT 토큰 생성 및 반화
-        String createToken = jwtUtil.createKakaoToken(kakaouUser.getEmail(), kakaouUser.getUserRole());
+        String createToken = jwtUtil.createKakaoToken(kakaouUser.getEmail(),
+            kakaouUser.getUserRole());
 
         return createToken;
     }
@@ -144,7 +145,8 @@ public class KakaoService {
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
 
-                kakaoUser = new User(email, encodedPassword, kakaoUserInfo.getNickname(), UserRoleEnum.USER, kakaoId);
+                kakaoUser = new User(email, encodedPassword, kakaoUserInfo.getNickname(),
+                    UserRoleEnum.USER, kakaoId);
             }
 
             userRepository.save(kakaoUser);

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class KakaoController {
+
     private final KakaoService kakaoService;
+
     @GetMapping("/api/user/kakao/callback")
     public String kakaoLogin(@RequestParam String code, HttpServletResponse response)
         throws JsonProcessingException {

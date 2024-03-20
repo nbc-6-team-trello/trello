@@ -73,8 +73,17 @@ public class TodoService {
     }
 
     @Transactional
-    public void deleteTodo(Long todoId) {
+    public void deleteTodo(Long boardId, Long todoId, User user) {
+        // 유저 확인
+        user = findUserBy(user.getEmail());
+        // 참여자 확인
+        validateParticipants(boardId, user.getId());
+        // 보드 확인
+        Board board = findBoard(boardId);
+        // 컬럼 확인
         Todo todo = findTodo(todoId);
+        // 컬럼 작성자 확인
+        validateUser(todo.getUser().getId(), user.getId());
 
         todoRepository.delete(todo);
     }

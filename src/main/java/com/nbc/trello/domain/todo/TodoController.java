@@ -69,10 +69,12 @@ public class TodoController {
         );
     }
 
-    @DeleteMapping("todos/{todoId}")
+    @DeleteMapping("/boards/{boardId}/todos/{todoId}")
     ResponseEntity<CommonResponse<Void>> deleteTodo(
-        @PathVariable Long todoId) {
-        todoService.deleteTodo(todoId);
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        todoService.deleteTodo(boardId, todoId, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<Void>builder()

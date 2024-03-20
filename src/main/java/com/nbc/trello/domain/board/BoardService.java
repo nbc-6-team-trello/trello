@@ -5,8 +5,10 @@ import com.nbc.trello.domain.participants.Participants;
 import com.nbc.trello.domain.participants.ParticipantsRepository;
 import com.nbc.trello.domain.todo.TodoRepository;
 import com.nbc.trello.domain.user.User;
+import com.nbc.trello.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class BoardService {
 
   private final CardRepository cardRepository;
 
+  private final UserRepository userRepository;
+
   private final ParticipantsRepository participantsRepository;
 
   //보드 생성
@@ -27,7 +31,7 @@ public class BoardService {
     Board board = new Board(requestDto);
     boardRepository.save(board);
 
-    Participants participants = new Participants(user, board);
+    Participants participants = new Participants(user.getId(), board.getId());
     participants.setGenerator(true);
     participantsRepository.save(participants);
 
@@ -48,7 +52,7 @@ public class BoardService {
   public BoardResponseDto updateBoard(Long boardId, BoardRequestDto requestDto, User user) {
     Board board = boardRepository.findById(boardId)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드입니다."));
-    Participants participants = participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
+    participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
         user.getId(), true).orElseThrow(() -> new IllegalArgumentException("보드 생성자가 아닙니다."));
 
     board.setName(requestDto.getName());
@@ -63,7 +67,7 @@ public class BoardService {
   public BoardResponseDto deleteBoard(Long boardId, BoardRequestDto requestDto, User user) {
     Board board = boardRepository.findById(boardId)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드입니다."));
-    Participants participants = participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
+    participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
         user.getId(), true).orElseThrow(() -> new IllegalArgumentException("보드 생성자가 아닙니다."));
     boardRepository.delete(board);
 
@@ -73,6 +77,28 @@ public class BoardService {
 
     return board.toDto();
   }
-  //보드 삭제수정 -> 만든사람만 가능하게 할 수 없음
 
+  //보드 초대
+  public BoardResponseDto inviteUser(Long boardId, Long userId, User user) {
+
+    userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하는 유저가 아니여서 초대할 수 없습니다."));
+
+    if(Objects.equals(userId, user.getId())) {
+      throw new IllegalArgumentException("자기 자신은 초대할 수 없습니다.");
+    }
+
+    Board board = boardRepository.findById(boardId)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드입니다."));
+    participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
+        user.getId(), true).orElseThrow(() -> new IllegalArgumentException("보드 초대 권한이 없습니다."));
+    boolean present = participantsRepository.findByBoardIdAndUserId(boardId, userId).isPresent();
+    if(present) {
+      throw new IllegalArgumentException("이미 참가하고 있는 사용자입니다.");
+    }
+
+    Participants participants = new Participants(userId, board.getId());
+    participantsRepository.save(participants);
+
+    return new BoardResponseDto(boardId, userId);
+  }
 }

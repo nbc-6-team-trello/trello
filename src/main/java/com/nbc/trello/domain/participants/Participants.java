@@ -18,21 +18,22 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Participants {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column
-    private Long userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column
-    private Long boardId;
+  @Column
+  private Long userId;
 
-    @Column
-    private Boolean generator = false;
+  @Column
+  private Long boardId;
 
-    public Participants(User user, Board board) {
-        this.userId = user.getId();
-        this.boardId = board.getId();
-    }
+  @Column
+  private Boolean generator = false;
+
+  public Participants(Long userId, Long boardId) {
+    this.userId = userId;
+    this.boardId = boardId;
+  }
 }

@@ -77,5 +77,19 @@ public class BoardController {
             .build());
 
   }
+
   //보드 초대
+  @PostMapping("/boards/{board_id}/users/{user_id}")
+  public ResponseEntity<CommonResponse<BoardResponseDto>> inviteUser(
+      @PathVariable Long board_id, @PathVariable Long user_id,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    BoardResponseDto responseDto = boardService.inviteUser(board_id, user_id,
+        userDetails.getUser());
+    return ResponseEntity.ok()
+        .body(CommonResponse.<BoardResponseDto>builder()
+            .msg("보드 초대에 성공하였습니다.")
+            .statusCode(200)
+            .data(responseDto)
+            .build());
+  }
 }

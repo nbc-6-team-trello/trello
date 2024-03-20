@@ -15,16 +15,22 @@ public class BoardResponseDto {
 
   private Long board_id;
 
+  private Long user_id;
+
   private String name;
 
   private String color;
 
   private String description;
-
   public BoardResponseDto(Board board) {
     this.board_id = board.getId();
     this.name = board.getName();
     this.color = board.getColor();
     this.description = board.getDescription();
+  }
+
+  public BoardResponseDto(Long board_id, Long user_id) {
+    this.board_id = board_id;
+    this.user_id = user_id;
   }
 }

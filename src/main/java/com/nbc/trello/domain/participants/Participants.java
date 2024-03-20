@@ -1,8 +1,5 @@
 package com.nbc.trello.domain.participants;
 
-import com.nbc.trello.domain.board.Board;
-import com.nbc.trello.domain.board.BoardResponseDto;
-import com.nbc.trello.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Participants {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,14 +27,11 @@ public class Participants {
     @Column
     private Long boardId;
 
-    public Participants(User user, Board board) {
-        this.userId = user.getId();
-        this.boardId = board.getId();
-    }
+    @Column
+    private Boolean generator = false;
 
-    public BoardResponseDto toDto() {
-        BoardResponseDto responseDto = new BoardResponseDto();
-        responseDto.setBoard_id(this.boardId);
-        return responseDto;
+    public Participants(Long userId, Long boardId) {
+        this.userId = userId;
+        this.boardId = boardId;
     }
 }

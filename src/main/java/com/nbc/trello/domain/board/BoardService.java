@@ -113,8 +113,11 @@ public class BoardService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드입니다."));
         participantsRepository.findByBoardIdAndUserIdAndGenerator(boardId,
             user.getId(), true).orElseThrow(() -> new IllegalArgumentException("보드 초대 권한이 없습니다."));
-        participantsRepository.findByBoardIdAndUserId(boardId, userId)
-            .orElseThrow(() -> new IllegalArgumentException("이미 참가하고 있는 사용자입니다."));
+        boolean present = participantsRepository.findByBoardIdAndUserId(boardId, userId)
+            .isPresent();
+        if(present) {
+            throw new IllegalArgumentException("이미 참가한 사용자입니다.");
+        }
 
         Participants participants = new Participants(userId, board.getId());
         participantsRepository.save(participants);

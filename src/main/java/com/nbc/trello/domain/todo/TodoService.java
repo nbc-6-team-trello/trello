@@ -66,7 +66,7 @@ public class TodoService {
         Board board = findBoard(boardId);
         // 참여자 확인
         validateParticipants(boardId, user.getId());
-        List<Todo> todoList = todoRepository.findAll();
+        List<Todo> todoList = todoRepository.findAll(Sort.by(Direction.ASC, "sequence"));
         if (todoList.isEmpty()) {
             throw new IllegalArgumentException("투두가 존재하지 않습니다.");
         }

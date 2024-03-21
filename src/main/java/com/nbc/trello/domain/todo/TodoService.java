@@ -13,6 +13,8 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,11 +36,25 @@ public class TodoService {
         // 보드 확인
         Board board = findBoard(boardId);
 
-        Todo todo = Todo.builder()
-            .board(board)
-            .user(user)
-            .title(requestDto.getTitle())
-            .build();
+        List<Todo> todoList = todoRepository.findAll(Sort.by(Direction.DESC, "sequence"));
+
+        Todo todo = null;
+
+        if (todoList.isEmpty()) {
+            todo = Todo.builder()
+                .board(board)
+                .user(user)
+                .title(requestDto.getTitle())
+                .sequence(1D)
+                .build();
+        } else {
+            todo = Todo.builder()
+                .board(board)
+                .user(user)
+                .title(requestDto.getTitle())
+                .sequence(todoList.get(0).getSequence() + 1D)
+                .build();
+        }
 
         return new TodoResponseDto(todoRepository.save(todo));
     }
@@ -98,6 +114,32 @@ public class TodoService {
         Todo todo = findTodo(todoId);
 
         todoRepository.delete(todo);
+    }
+
+    @Transactional
+    public void changeSequenceTodo(Long boardId, Long todoId, TodoSequenceRequestDto requestDto,
+        User user) {
+        // 유저 확인
+        user = findUserBy(user.getEmail());
+        // 참여자 확인
+        validateParticipants(boardId, user.getId());
+        // 보드 확인
+        Board board = findBoard(boardId);
+        // 보드에 투두 들어있나 확인
+        validateTodoExistInBoard(boardId, todoId);
+        // 컬럼 확인
+        Todo todo = findTodo(todoId);
+
+        List<Todo> todoList = todoRepository.findAll(Sort.by(Direction.ASC, "sequence"));
+
+        double sequence = todoList.get(requestDto.getSequence()).getSequence();
+        double preSequence = todoList.get(requestDto.getSequence() - 1).getSequence();
+
+        if (requestDto.getSequence() == 1) {
+            todo.updateSequence(preSequence, 0D);
+        } else {
+            todo.updateSequence(sequence, preSequence);
+        }
     }
 
     private User findUserBy(String email) {

@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -75,7 +74,7 @@ public class Card extends TimeStamped {
         this.deadline = cardRequestDto.getDeadline();
     }
 
-    private void updateVersion(int version){
+    private void updateVersion(int version) {
         this.version = version;
     }
 
@@ -83,7 +82,9 @@ public class Card extends TimeStamped {
         this.sequence = (sequence + preSequence) / 2;
     }
 
-    public void updateSequence(Double sequence) { this.sequence = sequence; }
+    public void updateSequence(Double sequence) {
+        this.sequence = sequence;
+    }
 
     public void updateLastSequence(Double sequence) {
         this.sequence = sequence + 1;

@@ -3,6 +3,7 @@ package com.nbc.trello.domain.card;
 import com.nbc.trello.domain.author.Author;
 import com.nbc.trello.domain.author.AuthorRepository;
 import com.nbc.trello.domain.board.Board;
+import com.nbc.trello.domain.board.BoardRepository;
 import com.nbc.trello.domain.board.BoardResponseDto;
 import com.nbc.trello.domain.comment.Comment;
 import com.nbc.trello.domain.comment.CommentRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CardService {
 
     private final CardRepository cardRepository;
@@ -36,14 +38,31 @@ public class CardService {
     private final UserRepository userRepository;
     private final ParticipantsRepository participantsRepository;
     private final AuthorRepository authorRepository;
+    private final BoardRepository boardRepository;
 
     //카드 등록
     public CardResponseDto CardCreateService(Long boardId, Long todoId,
         CardRequestDto cardRequestDto, User user) {
         //참여자 검증
         validateParticipants(boardId, user);
+        //보드 검증
+        boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("보드가 존재하지 않습니다."));
+        //보드에 투두가 있는지 검증
+        validateTodoExistInBoard(boardId,todoId);
 
-        Card card = new Card(cardRequestDto);
+
+        List<Card> cardList = cardRepository.findAll(Sort.by(Direction.DESC, "sequence"));
+
+        Card card = null;
+
+        if (cardList.isEmpty()) {
+            card = new Card(cardRequestDto);
+            card.setSequence(1D);
+
+        } else {
+            card = new Card(cardRequestDto);
+            card.setSequence(cardList.get(0).getSequence() + 1D);
+        }
 
         //칼럽이 있는지 검증
         Todo todo = todoRepository.findById(todoId).orElseThrow(()->new IllegalArgumentException("todo에 등록할 todo를 찾을 수 없습니다."));
@@ -60,6 +79,8 @@ public class CardService {
     public CardCommentResponseDto cardGetService(Long boardId, Long todoId, Long cardId,UserDetailsImpl userDetails) {
         //참여자 검증
         validateParticipants(boardId, userDetails.getUser());
+        //보드 검증
+        boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("보드가 존재하지 않습니다."));
         //투두 있는지
         validateTodoExistInBoard(boardId, todoId);
 
@@ -89,8 +110,9 @@ public class CardService {
     public CardResponseDto CardDeleteService(Long boardId, Long todoId, Long cardId, User user) {
         //참여자 검증
         validateParticipants(boardId,user);
-
-        //todo 검증
+        //보드 검증
+        boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("보드가 존재하지 않습니다."));
+        //투두가 있는지 검증
         validateTodoExistInBoard(boardId,todoId);
 
         Card card = cardRepository.findById(cardId).orElseThrow(()->new IllegalArgumentException("삭제할 카드가 존재하지 않습니다."));
@@ -114,8 +136,9 @@ public class CardService {
         CardRequestDto cardRequestDto, User user) {
         //참여자 검증
         validateParticipants(boardId,user);
-
-        //todo 검증
+        //보드 검증
+        boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("보드가 존재하지 않습니다."));
+        //투두 검증
         validateTodoExistInBoard(boardId,todoId);
 
         Card card = cardRepository.findById(cardId).orElseThrow(()->new IllegalArgumentException("수정할 카드가 존재하지 않습니다."));
@@ -131,15 +154,14 @@ public class CardService {
         return new CardResponseDto(boardId, card.getTodo().getId(), card.getId());
     }
 
-    @Transactional
     public void inviteUser(Long boardId, Long todoId, Long userId, Long cardId, User user) {
-        // 유저 확인
-        user = findUserBy(user.getEmail());
         // 참여자 확인
         validateParticipants(boardId, user);
-        // 보드에 투두 들어있나 확인
+        //보드 검증
+        boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("보드가 존재하지 않습니다."));
+        // 보드에 투두 있는지 확인
         validateTodoExistInBoard(boardId, todoId);
-        // 투두에 카드 들어있나 확인
+        // 투두에 카드 있는지 확인
         validateCardExistInTodo(todoId, cardId);
 
         userRepository.findById(userId)
@@ -178,7 +200,6 @@ public class CardService {
 
     }
 
-    @Transactional
     public void changeSequenceCard(Long boardId, Long todoId, Long cardId, CardSequenceRequestDto cardSequenceRequestDto,
         User user) {
         // 참여자 확인
@@ -186,17 +207,27 @@ public class CardService {
         // 보드에 투두 들어있나 확인
         validateTodoExistInBoard(boardId, todoId);
 
-        Card card = cardRepository.findById(cardId).orElseThrow(()->new IllegalArgumentException("카드가 존재하지 않습니다."));
+        Card card = cardRepository.findById(cardId)
+            .orElseThrow(()->new IllegalArgumentException("카드가 존재하지 않습니다."));
 
         List<Card> cardList = cardRepository.findAll(Sort.by(Direction.ASC, "sequence"));
+        List<Card> reverseCardList = cardRepository.findAll(Sort.by(Direction.DESC, "sequence"));
 
-        double sequence = cardList.get(cardSequenceRequestDto.getSequence()).getSequence();
-        double preSequence = cardList.get(cardSequenceRequestDto.getSequence() - 1).getSequence();
+        Long cardListIndex = (long) cardSequenceRequestDto.getSequence();
 
-        if (cardSequenceRequestDto.getSequence() == 1) {
-            card.updateSequence(preSequence, 0D);
+        if (cardListIndex <= 0 || cardListIndex > cardList.size()) {
+            throw new IllegalArgumentException("해당 순서로 바꿀 수 없습니다.");
+        } else if (cardListIndex == cardList.size()) {
+            card.updateLastSequence(reverseCardList.get(0).getSequence());
         } else {
-            card.updateSequence(sequence, preSequence);
+            double sequence = cardList.get(cardSequenceRequestDto.getSequence() - 1).getSequence();
+            if (cardListIndex == 1) {
+                card.updateSequence(sequence, 0D );
+            } else {
+                double preSequence = cardList.get(cardSequenceRequestDto.getSequence() - 2)
+                    .getSequence();
+                card.updateSequence(sequence, preSequence);
+            }
         }
     }
 

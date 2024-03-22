@@ -14,15 +14,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/boards/{boardId}/todos/{todoId}/cards")
 public class CardController {
 
     private final CardService cardService;
 
-    @PostMapping("/boards/{boardId}/todoId/{todoId}/cards")
+    @PostMapping()
     public ResponseEntity<CommonResponse<CardResponseDto>> createCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,
@@ -39,7 +41,7 @@ public class CardController {
             .build());
     }
 
-    @GetMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
+    @GetMapping("/{cardId}")
     public ResponseEntity<CommonResponse<CardCommentResponseDto>> getCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,
@@ -56,7 +58,7 @@ public class CardController {
             .build());
     }
 
-    @DeleteMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
+    @DeleteMapping("/{cardId}")
     public ResponseEntity<CommonResponse<CardResponseDto>> deleteCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,
@@ -72,7 +74,7 @@ public class CardController {
             .build());
     }
 
-    @PutMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
+    @PutMapping("/{cardId}")
     public ResponseEntity<CommonResponse<CardResponseDto>> updateCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,
@@ -90,7 +92,7 @@ public class CardController {
             .build());
     }
 
-    @PostMapping("users/{userId}/boards/{boardId}/todos/{todoId}/cards/{cardId}/inviter")
+    @PostMapping("/{cardId}/users/{userId}/inviter")
     public ResponseEntity<CommonResponse<Void>> inviteUser(
         @PathVariable Long userId,
         @PathVariable Long boardId,
@@ -99,6 +101,7 @@ public class CardController {
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         cardService.inviteUser(boardId, todoId, userId, cardId,
             userDetails.getUser());
+
         return ResponseEntity.ok()
             .body(CommonResponse.<Void>builder()
                 .msg("작업자 초대에 성공하였습니다.")
@@ -106,7 +109,7 @@ public class CardController {
                 .build());
     }
 
-    @PostMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}/mover")
+    @PostMapping("/{cardId}/mover")
     public ResponseEntity<CommonResponse<Void>> MoveCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,
@@ -114,6 +117,7 @@ public class CardController {
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         cardService.MoveCard(boardId, todoId, cardId,
             userDetails.getUser());
+
         return ResponseEntity.ok()
             .body(CommonResponse.<Void>builder()
                 .msg("카드가 이동했습니다.")
@@ -121,7 +125,7 @@ public class CardController {
                 .build());
     }
 
-    @PatchMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
+    @PatchMapping("/{cardId}")
     ResponseEntity<CommonResponse<Void>> changeSequenceCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,
@@ -132,7 +136,7 @@ public class CardController {
 
         return ResponseEntity.status(HttpStatus.OK.value()).body(
             CommonResponse.<Void>builder()
-                .msg("카드 순서 이동 성공")
+                .msg("카드 순서 이동했습니다.")
                 .statusCode(HttpStatus.OK.value())
                 .build()
         );

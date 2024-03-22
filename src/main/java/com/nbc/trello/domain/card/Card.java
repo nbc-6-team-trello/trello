@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,7 +58,6 @@ public class Card extends TimeStamped {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Todo todo;
 
-
     public Card(CardRequestDto cardRequestDto) {
         this.name = cardRequestDto.getName();
         this.pic = cardRequestDto.getPic();
@@ -65,6 +65,7 @@ public class Card extends TimeStamped {
         this.color = cardRequestDto.getBackground();
         this.deadline = cardRequestDto.getDeadline();
     }
+
 
     public void CardUpdate(CardRequestDto cardRequestDto) {
         this.name = cardRequestDto.getName();
@@ -81,5 +82,10 @@ public class Card extends TimeStamped {
     public void updateSequence(Double sequence, Double preSequence) {
         this.sequence = (sequence + preSequence) / 2;
     }
+
+    public void updateLastSequence(Double sequence) {
+        this.sequence = sequence + 1;
+    }
+
 
 }

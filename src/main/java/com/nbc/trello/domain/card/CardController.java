@@ -1,15 +1,15 @@
 package com.nbc.trello.domain.card;
 
-import com.nbc.trello.domain.board.BoardResponseDto;
+import com.nbc.trello.domain.todo.TodoSequenceRequestDto;
 import com.nbc.trello.global.response.CommonResponse;
 import com.nbc.trello.global.util.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,16 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Controller
 @RequiredArgsConstructor
 public class CardController {
 
     private final CardService cardService;
 
-    @PostMapping("/boards/{board_id}/columns/{column_id}/cards")
+    @PostMapping("/boards/{boardId}/todoId/{todoId}/cards")
     public ResponseEntity<CommonResponse<CardResponseDto>> createCard(
-        @PathVariable("board_id") Long boardId,
-        @PathVariable("column_id") Long todoId,
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
         @RequestBody CardRequestDto cardRequestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -40,15 +39,15 @@ public class CardController {
             .build());
     }
 
-    @GetMapping("/boards/{board_id}/columns/{column_id}/cards/{card_id}")
+    @GetMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
     public ResponseEntity<CommonResponse<CardCommentResponseDto>> getCard(
-        @PathVariable("board_id") Long boardId,
-        @PathVariable("column_id") Long todoId,
-        @PathVariable("card_id") Long card_id,
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @PathVariable Long cardId,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CardCommentResponseDto cardCommentResponseDto = cardService.CardGetService(boardId,
-            todoId, card_id, userDetails);
+        CardCommentResponseDto cardCommentResponseDto = cardService.cardGetService(boardId,
+            todoId, cardId, userDetails);
 
         return ResponseEntity.ok(CommonResponse.<CardCommentResponseDto>builder()
             .msg("카드 조회에 성공하였습니다.")
@@ -57,14 +56,14 @@ public class CardController {
             .build());
     }
 
-    @DeleteMapping("/boards/{board_id}/columns/{column_id}/cards/{card_id}")
+    @DeleteMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
     public ResponseEntity<CommonResponse<CardResponseDto>> deleteCard(
-        @PathVariable("board_id") Long boardId,
-        @PathVariable("column_id") Long todoId,
-        @PathVariable("card_id") Long card_id,
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @PathVariable Long cardId,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CardResponseDto cardResponseDto = cardService.CardDeleteService(boardId, todoId, card_id, userDetails.getUser());
+        CardResponseDto cardResponseDto = cardService.CardDeleteService(boardId, todoId, cardId, userDetails.getUser());
 
         return ResponseEntity.ok(CommonResponse.<CardResponseDto>builder()
             .msg("카드 삭제에 성공하였습니다.")
@@ -73,15 +72,15 @@ public class CardController {
             .build());
     }
 
-    @PutMapping("/boards/{board_id}/columns/{column_id}/cards/{card_id}")
+    @PutMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
     public ResponseEntity<CommonResponse<CardResponseDto>> updateCard(
-        @PathVariable("board_id") Long boardId,
-        @PathVariable("column_id") Long todoId,
-        @PathVariable("card_id") Long card_id,
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @PathVariable Long cardId,
         @RequestBody CardRequestDto cardRequestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CardResponseDto cardResponseDto = cardService.CardUpdateService(boardId, todoId, card_id,
+        CardResponseDto cardResponseDto = cardService.CardUpdateService(boardId, todoId, cardId,
             cardRequestDto, userDetails.getUser());
 
         return ResponseEntity.ok(CommonResponse.<CardResponseDto>builder()
@@ -91,21 +90,52 @@ public class CardController {
             .build());
     }
 
-    @PostMapping("/boards/{board_id}/columns/{column_id}/cards/{card_id}/inviteAuthor")
-    public ResponseEntity<CommonResponse<CardResponseDto>> inviteAuthor(
-        @PathVariable("board_id") Long boardId,
-        @PathVariable("column_id") Long todoId,
-        @PathVariable("card_id") Long card_id,
-        @RequestBody CardRequestDto cardRequestDto,
+    @PostMapping("users/{userId}/boards/{boardId}/todos/{todoId}/cards/{cardId}/inviter")
+    public ResponseEntity<CommonResponse<Void>> inviteUser(
+        @PathVariable Long userId,
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @PathVariable Long cardId,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        CardResponseDto cardResponseDto = cardService.inviteAuthor(boardId,todoId,card_id,cardRequestDto,userDetails.getUser());
-
+        cardService.inviteUser(boardId, todoId, userId, cardId,
+            userDetails.getUser());
         return ResponseEntity.ok()
-            .body(CommonResponse.<CardResponseDto>builder()
-                .msg("카드 초대에 성공하였습니다.")
-                .statusCode(HttpStatus.OK.value())
-                .data(cardResponseDto)
+            .body(CommonResponse.<Void>builder()
+                .msg("작업자 초대에 성공하였습니다.")
+                .statusCode(200)
                 .build());
     }
+
+    @PostMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}/mover")
+    public ResponseEntity<CommonResponse<Void>> MoveCard(
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @PathVariable Long cardId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.MoveCard(boardId, todoId, cardId,
+            userDetails.getUser());
+        return ResponseEntity.ok()
+            .body(CommonResponse.<Void>builder()
+                .msg("카드가 이동했습니다.")
+                .statusCode(200)
+                .build());
+    }
+
+    @PatchMapping("/boards/{boardId}/todos/{todoId}/cards/{cardId}")
+    ResponseEntity<CommonResponse<Void>> changeSequenceCard(
+        @PathVariable Long boardId,
+        @PathVariable Long todoId,
+        @PathVariable Long cardId,
+        @RequestBody CardSequenceRequestDto cardSequenceRequestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cardService.changeSequenceCard(boardId, todoId, cardId, cardSequenceRequestDto, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK.value()).body(
+            CommonResponse.<Void>builder()
+                .msg("카드 순서 이동 성공")
+                .statusCode(HttpStatus.OK.value())
+                .build()
+        );
+    }
+
 }

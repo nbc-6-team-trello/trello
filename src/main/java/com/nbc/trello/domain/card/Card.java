@@ -49,6 +49,9 @@ public class Card extends TimeStamped {
     @Column
     private LocalDateTime deadline;
 
+    @Column
+    private Double sequence;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -73,6 +76,10 @@ public class Card extends TimeStamped {
 
     private void updateVersion(int version){
         this.version = version;
+    }
+
+    public void updateSequence(Double sequence, Double preSequence) {
+        this.sequence = (sequence + preSequence) / 2;
     }
 
 }

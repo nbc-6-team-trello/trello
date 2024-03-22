@@ -15,6 +15,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -249,7 +250,6 @@ public class CardService {
                 sequence = cardList.get(to - 1).getSequence();
                 preSequence = cardList.get(to - 2).getSequence();
             }
-
             card.updateSequence(sequence, preSequence);
         }
     }

@@ -92,7 +92,7 @@ public class CardController {
             .build());
     }
 
-    @PostMapping("/{cardId}/users/{userId}/inviter")
+    @PostMapping("/{cardId}/users/{userId}")
     public ResponseEntity<CommonResponse<Void>> inviteUser(
         @PathVariable Long userId,
         @PathVariable Long boardId,
@@ -109,7 +109,7 @@ public class CardController {
                 .build());
     }
 
-    @PostMapping("/{cardId}/mover")
+    @PostMapping("/{cardId}/move")
     public ResponseEntity<CommonResponse<Void>> MoveCard(
         @PathVariable Long boardId,
         @PathVariable Long todoId,

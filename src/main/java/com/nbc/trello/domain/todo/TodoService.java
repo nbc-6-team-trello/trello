@@ -142,7 +142,7 @@ public class TodoService {
             double sequence = todoList.get(requestDto.getSequence()).getSequence();
             double preSequence = todoList.get(requestDto.getSequence() - 1).getSequence();
             if (todoListIndex == 1) {
-                todo.updateSequence(preSequence, 0D);
+                todo.updateSequence(preSequence, 0D );
             } else
                 todo.updateSequence(sequence, preSequence);
             }
